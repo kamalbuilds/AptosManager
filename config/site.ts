@@ -1,9 +1,9 @@
 export type SiteConfig = typeof siteConfig
 
 export const siteConfig = {
-  name: "Next.js",
+  name: "AptoData",
   description:
-    "Beautifully designed components built with Radix UI and Tailwind CSS.",
+    "Debank for Aptos",
   mainNav: [
     {
       title: "Home",
@@ -11,8 +11,7 @@ export const siteConfig = {
     },
   ],
   links: {
-    twitter: "https://twitter.com/shadcn",
-    github: "https://github.com/shadcn/ui",
+    twitter: "https://twitter.com/0xkamal7",
     docs: "https://ui.shadcn.com",
   },
 }
