@@ -8,6 +8,7 @@ import { SiteHeader } from "@/components/site-header"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
 import { ThemeProvider } from "@/components/theme-provider"
 import Provider from "./Provider"
+import { GlobalContextProvider } from "@/context/GlobalContext"
 
 export const metadata: Metadata = {
   title: {
@@ -42,13 +43,15 @@ export default function RootLayout({ children }: RootLayoutProps) {
           )}
         >
           <ThemeProvider attribute="class" defaultTheme="system" enableSystem>
-            <Provider>
-              <div className="relative flex min-h-screen flex-col">
-                <SiteHeader />
-                <div className="flex-1">{children}</div>
-              </div>
-              <TailwindIndicator />
-            </Provider>
+            <GlobalContextProvider>
+              <Provider>
+                <div className="relative flex min-h-screen flex-col">
+                  <SiteHeader />
+                  <div className="flex-1">{children}</div>
+                </div>
+                <TailwindIndicator />
+              </Provider>
+            </GlobalContextProvider>
           </ThemeProvider>
         </body>
       </html>

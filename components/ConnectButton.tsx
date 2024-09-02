@@ -3,9 +3,7 @@ import { WalletSelector } from './WalletSelector';
 
 const ConnectButton = () => {
     return (
-        <div>
-            <WalletSelector />
-        </div>
+        <WalletSelector />
     );
 };
 
