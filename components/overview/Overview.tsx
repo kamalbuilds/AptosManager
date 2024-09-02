@@ -1,8 +1,11 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { LineChart, Line, XAxis, YAxis, Tooltip, ResponsiveContainer } from 'recharts'
+import { GlobalContext } from '@/context/GlobalContext';
 
 const Overview = () => {
+
+    const { activeTab, address, setAddress, setTokensData, tokensData, NFTsData, setNFTsData } = useContext(GlobalContext);
 
     const totalPortfolioValue = 0
     const coinBalances = []
@@ -28,6 +31,8 @@ const Overview = () => {
         </ResponsiveContainer>
     )
 
+    const coinTypes = tokensData.filter(asset => asset.amount > 0).length;
+    const nftsOwned = NFTsData.filter(asset => asset.amount > 0).length;
     return (
         <div>
             <h1 className="mb-4 text-3xl font-bold">OverView</h1>
@@ -46,7 +51,7 @@ const Overview = () => {
                         <CardTitle>Coin Types</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-2xl font-bold">{coinBalances.length}</p>
+                        <p className="text-2xl font-bold">{coinTypes}</p>
                     </CardContent>
                 </Card>
                 <Card>
@@ -54,7 +59,7 @@ const Overview = () => {
                         <CardTitle>NFTs Owned</CardTitle>
                     </CardHeader>
                     <CardContent>
-                        <p className="text-2xl font-bold">{nfts.length}</p>
+                        <p className="text-2xl font-bold">{nftsOwned}</p>
                     </CardContent>
                 </Card>
             </div>

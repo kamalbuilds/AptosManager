@@ -1,10 +1,12 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { GlobalContext } from '@/context/GlobalContext';
 
 const CoinsComponent = () => {
-    const [coinBalances, setCoinBalances] = useState([])
+    const { tokensData } = useContext(GlobalContext);
+    console.log("tokensData", tokensData);
 
     return (
         <Card>
@@ -15,21 +17,28 @@ const CoinsComponent = () => {
                 <Table>
                     <TableHeader>
                         <TableRow>
+                            <TableHead>Index</TableHead>
                             <TableHead>Coin Type</TableHead>
                             <TableHead>Balance</TableHead>
-                            <TableHead>Value (USD)</TableHead>
-                            <TableHead>24h Change</TableHead>
+                            <TableHead>Symbol</TableHead>
+                            <TableHead>Type</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {coinBalances.map((coin: any, index) => (
-                            <TableRow key={index}>
-                                <TableCell>{coin.coin_type}</TableCell>
-                                <TableCell>{coin.amount}</TableCell>
-                                <TableCell>${(coin.amount * 1).toFixed(2)}</TableCell>
-                                <TableCell className="text-green-500">+2.5%</TableCell>
-                            </TableRow>
-                        ))}
+                        {tokensData.map((coin: any, index) => {
+                            const balance = coin.metadata ? ((coin.amount) / 10 ** (coin.metadata.decimals)) : coin.amount;
+                            return (
+                                <TableRow key={index}>
+                                    <TableCell>
+                                        {index + 1}
+                                    </TableCell>
+                                    <TableCell>{coin.metadata ? coin.metadata.name : 'NULL'}</TableCell>
+                                    <TableCell>{balance.toFixed(4)}</TableCell>
+                                    <TableCell>{coin.metadata ? coin.metadata.symbol : 'NULL'}</TableCell>
+                                    <TableCell className="capitalize">{coin.token_standard}</TableCell>
+                                </TableRow>
+                            )
+                        })}
                     </TableBody>
                 </Table>
             </CardContent>

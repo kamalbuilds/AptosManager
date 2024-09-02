@@ -1,10 +1,16 @@
+/* eslint-disable @next/next/no-img-element */
 "use client"
-import React, { useState } from 'react';
+import React, { useContext, useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
+import { GlobalContext } from '@/context/GlobalContext';
 
 const NFTsComponent = () => {
     const [nfts, setNfts] = useState([])
+
+    const { NFTsData } = useContext(GlobalContext);
+
+    console.log("NFTsData", NFTsData)
 
     return (
         <Card>
@@ -15,21 +21,33 @@ const NFTsComponent = () => {
                 <Table>
                     <TableHeader>
                         <TableRow>
-                            <TableHead>Collection</TableHead>
                             <TableHead>Name</TableHead>
-                            <TableHead>Token ID</TableHead>
-                            <TableHead>Estimated Value</TableHead>
+                            <TableHead>Amount</TableHead>
+                            <TableHead>Collection Name</TableHead>
+                            <TableHead>Curr_Supply</TableHead>
+                            <TableHead>Store</TableHead>
+                            <TableHead>Type</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {nfts.map((nft: any, index) => (
-                            <TableRow key={index}>
-                                <TableCell>{nft.collection}</TableCell>
-                                <TableCell>{nft.name}</TableCell>
-                                <TableCell>{nft.token_id}</TableCell>
-                                <TableCell>$100</TableCell>
-                            </TableRow>
-                        ))}
+                        {NFTsData.map((nft: any, index) => {
+                            const amount = nft.amount;
+                            if (amount > 0) {
+                                return (
+                                    <TableRow key={index}>
+                                        <TableCell>{nft.current_token_data.token_name}</TableCell>
+                                        <TableCell>{nft.amount}</TableCell>
+                                        <TableCell>{nft.current_token_data.current_collection.collection_name}</TableCell>
+                                        <TableCell>{nft.current_token_data.current_collection.current_supply}</TableCell>
+                                        <TableCell>{nft.table_type_v1}</TableCell>
+                                        <TableCell>{nft.token_standard}</TableCell>
+                                    </TableRow>
+                                )
+                            } else {
+                                return null
+                            }
+
+                        })}
                     </TableBody>
                 </Table>
             </CardContent>

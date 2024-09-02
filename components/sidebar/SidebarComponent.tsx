@@ -6,6 +6,7 @@ import { BarChart, Wallet, Coins, Image, ArrowUpDown, PieChart, TrendingUp, Acti
 const SidebarComponent = () => {
 
     const { activeTab, setActiveTab } = useContext(GlobalContext);
+
     return (
         <div className="w-64 bg-white shadow-md">
             <div className="p-4">

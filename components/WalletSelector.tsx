@@ -22,7 +22,7 @@ import {
     LogOut,
     User,
 } from "lucide-react";
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Button } from "./ui/button";
 import {
     Collapsible,
