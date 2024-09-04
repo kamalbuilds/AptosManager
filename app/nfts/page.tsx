@@ -4,22 +4,30 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Search, Image, ArrowUpDown } from 'lucide-react'
+import { Search, Image, ArrowUpDown, ChevronLeft, ChevronRight } from 'lucide-react'
 
-// todo : use nodit here @kamal
-const fetchNFTCollections = async (searchTerm = '') => {
+// use nodit here @kamal
+const fetchNFTCollections = async (searchTerm = '', page = 1, pageSize = 3) => {
   // Simulating API call
   await new Promise(resolve => setTimeout(resolve, 1000))
-  return [
+  const allCollections = [
     { creator: '0x1', name: 'Aptos Monkeys', nft_count: 10000, floor_price: 10, volume_24h: 5000 },
     { creator: '0x2', name: 'Aptomingos', nft_count: 5000, floor_price: 5, volume_24h: 2000 },
     { creator: '0x3', name: 'Aptos Undead', nft_count: 3000, floor_price: 3, volume_24h: 1000 },
+    { creator: '0x4', name: 'Aptos Punks', nft_count: 8000, floor_price: 8, volume_24h: 4000 },
+    { creator: '0x5', name: 'Aptos Cats', nft_count: 6000, floor_price: 6, volume_24h: 3000 },
   ].filter(collection => collection.name.toLowerCase().includes(searchTerm.toLowerCase()))
+
+  const startIndex = (page - 1) * pageSize
+  const endIndex = startIndex + pageSize
+  return {
+    collections: allCollections.slice(startIndex, endIndex),
+    totalPages: Math.ceil(allCollections.length / pageSize)
+  }
 }
 
 const fetchNFTCollectionByName = async (name: string) => {
-  // using api call to fetch collection details
+  // Simulating API call
   await new Promise(resolve => setTimeout(resolve, 1000))
   return {
     creator: '0x1',
@@ -43,14 +51,17 @@ export default function Component() {
   const [selectedCollection, setSelectedCollection] = useState(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
+  const [currentPage, setCurrentPage] = useState(1)
+  const [totalPages, setTotalPages] = useState(1)
 
   useEffect(() => {
     const fetchCollections = async () => {
       setLoading(true)
       setError('')
       try {
-        const data = await fetchNFTCollections(searchTerm)
-        setCollections(data)
+        const data = await fetchNFTCollections(searchTerm, currentPage)
+        setCollections(data.collections)
+        setTotalPages(data.totalPages)
       } catch (err) {
         setError('Failed to fetch collections. Please try again.')
       } finally {
@@ -59,7 +70,7 @@ export default function Component() {
     }
 
     fetchCollections()
-  }, [searchTerm])
+  }, [searchTerm, currentPage])
 
   const handleCollectionClick = async (collectionName: string) => {
     setLoading(true)
@@ -72,6 +83,14 @@ export default function Component() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const handlePrevPage = () => {
+    setCurrentPage(prev => Math.max(prev - 1, 1))
+  }
+
+  const handleNextPage = () => {
+    setCurrentPage(prev => Math.min(prev + 1, totalPages))
   }
 
   return (
@@ -124,6 +143,17 @@ export default function Component() {
                   ))}
                 </TableBody>
               </Table>
+              <div className="flex justify-between items-center mt-4">
+                <Button onClick={handlePrevPage} disabled={currentPage === 1}>
+                  <ChevronLeft className="mr-2 h-4 w-4" />
+                  Previous
+                </Button>
+                <span>Page {currentPage} of {totalPages}</span>
+                <Button onClick={handleNextPage} disabled={currentPage === totalPages}>
+                  Next
+                  <ChevronRight className="ml-2 h-4 w-4" />
+                </Button>
+              </div>
             </CardContent>
           </Card>
         )}
