@@ -67,7 +67,6 @@ export default function Component() {
   return (
     <>
       <div className="flex h-screen ">
-        <SidebarComponent />
         <div className="flex-1 overflow-auto p-8">
           <header className="mb-8">
             <h1 className="mb-4 text-3xl font-bold">Aptos Explorer</h1>
