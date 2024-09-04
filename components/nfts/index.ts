@@ -1,1 +1,1 @@
-export * from "./NFTsComponent"
+export * from "./NFTSearch"

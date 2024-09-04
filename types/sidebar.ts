@@ -5,3 +5,4 @@ export type ActiveTabStates =
   | "nfts"
   | "transfers"
   | "defi"
+  | "profile"
