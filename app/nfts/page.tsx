@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { getNFTCollectionData } from "@/helpers/NFTSData"
-import { fetchNFTCollectionByCollectionId } from "@/helpers/NFTSData/fetchNFTCollectionByCollectionId"
+import { fetchNFTCollectionByCollectionName } from "@/helpers/NFTSData/fetchNFTCollectionByCollectionName"
 import {
   ArrowUpDown,
   ChevronLeft,
@@ -11,6 +11,7 @@ import {
   Image,
   Search,
 } from "lucide-react"
+import { RotatingLines } from "react-loader-spinner"
 
 import { APP_PATHS } from "@/config/Routes"
 import { shortenAddress } from "@/lib/shortenAddress"
@@ -36,6 +37,7 @@ export default function Component() {
 
   const [NFTCollectionData, setNFTCollectionData] = useState([])
   const [isLoading, setIsLoading] = useState(false)
+  const [showPagination, setShowPagination] = useState(true)
 
   const handlePrevPage = () => {
     const page = Math.min(currentPage - 1, 1)
@@ -53,9 +55,9 @@ export default function Component() {
     try {
       setIsLoading(true)
       const res = await getNFTCollectionData(page)
-      console.log("REs", res)
       if (res.current_collections_v2) {
         setIsLoading(false)
+        setShowPagination(true)
         setNFTCollectionData(res.current_collections_v2)
       }
     } catch (error) {
@@ -64,11 +66,21 @@ export default function Component() {
     }
   }
 
-  const handleFetchCollectionDataById = async () => {
+  const handleFetchCollectionDataByCollectionName = async () => {
     if (!searchTerm) return
 
-    const res = await fetchNFTCollectionByCollectionId(searchTerm)
-    console.log("Res", res)
+    try {
+      setIsLoading(true)
+      const res = await fetchNFTCollectionByCollectionName(searchTerm)
+      if (res.current_collections_v2) {
+        setIsLoading(false)
+        setShowPagination(false)
+        setNFTCollectionData(res.current_collections_v2)
+      }
+    } catch (error) {
+      setIsLoading(false)
+      console.log("Error", error)
+    }
   }
 
   useEffect(() => {
@@ -88,12 +100,18 @@ export default function Component() {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full max-w-md"
           />
-          <Button onClick={handleFetchCollectionDataById}>
+          <Button
+            disabled={searchTerm.length <= 0}
+            onClick={() => {
+              setSearchTerm("")
+              handleFetchCollectionData(1)
+            }}
+          >
+            Clear
+          </Button>
+          <Button onClick={handleFetchCollectionDataByCollectionName}>
             <Search className="mr-2 size-4" />
             Search
-          </Button>
-          <Button onClick={() => handleFetchCollectionData(1)}>
-            Get NFT Collection
           </Button>
         </div>
 
@@ -112,57 +130,79 @@ export default function Component() {
                   <TableHead>Max Supply</TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody>
-                {isLoading ? (
-                  <div>Loading....</div>
-                ) : (
-                  <>
-                    {!NFTCollectionData.length && <div>No Data available</div>}
-                    {NFTCollectionData.map((collection: any, index) => {
-                      return (
-                        <TableRow
-                          key={index}
-                          className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800"
+              {isLoading ? (
+                <div className="flex h-[50vh] w-full items-center justify-center">
+                  <RotatingLines
+                    visible={true}
+                    width="40"
+                    strokeColor="#2c68e7"
+                    strokeWidth="5"
+                    animationDuration="0.75"
+                    ariaLabel="rotating-lines-loading"
+                  />
+                </div>
+              ) : (
+                <TableBody className="h-[50vh]">
+                  {!NFTCollectionData.length && <div>No Data available</div>}
+                  {NFTCollectionData.map((collection: any, index) => {
+                    const adjustedIndex = index + 1 + (currentPage - 1) * 10
+                    return (
+                      <TableRow
+                        key={index}
+                        className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800"
+                      >
+                        <TableCell>{adjustedIndex}</TableCell>
+                        <TableCell
+                          className="cursor-pointer text-blue-500 hover:underline"
                           onClick={() =>
                             router.push(
                               `${APP_PATHS.NFTS}/${collection.collection_id}`
                             )
                           }
                         >
-                          <TableCell>{index + 1}</TableCell>
-                          <TableCell>{collection.collection_name}</TableCell>
-                          <TableCell>
-                            {shortenAddress(collection?.creator_address, 10)}
-                          </TableCell>
-                          <TableCell>
-                            {collection.current_supply.toLocaleString()}
-                          </TableCell>
-                          <TableCell>
-                            {collection.max_supply.toLocaleString()}
-                          </TableCell>
-                        </TableRow>
-                      )
-                    })}
-                  </>
-                )}
-              </TableBody>
+                          {collection.collection_name}
+                        </TableCell>
+                        <TableCell
+                          className="cursor-pointer text-blue-500 hover:underline"
+                          onClick={() => {
+                            if (collection?.creator_address)
+                              router.push(
+                                `${APP_PATHS.PROFILE}/${collection?.creator_address}`
+                              )
+                          }}
+                        >
+                          {shortenAddress(collection?.creator_address, 10)}
+                        </TableCell>
+                        <TableCell>
+                          {collection.current_supply?.toLocaleString()}
+                        </TableCell>
+                        <TableCell>
+                          {collection.max_supply?.toLocaleString()}
+                        </TableCell>
+                      </TableRow>
+                    )
+                  })}
+                </TableBody>
+              )}
             </Table>
-            <div className="mt-4 flex items-center justify-between">
-              <Button onClick={handlePrevPage} disabled={currentPage === 1}>
-                <ChevronLeft className="mr-2 h-4 w-4" />
-                Previous
-              </Button>
-              <span>
-                Page {currentPage} of {totalPages}
-              </span>
-              <Button
-                onClick={handleNextPage}
-                disabled={currentPage === totalPages}
-              >
-                Next
-                <ChevronRight className="ml-2 h-4 w-4" />
-              </Button>
-            </div>
+            {showPagination && (
+              <div className="mt-4 flex items-center justify-between">
+                <Button onClick={handlePrevPage} disabled={currentPage === 1}>
+                  <ChevronLeft className="mr-2 size-4" />
+                  Previous
+                </Button>
+                <span>
+                  Page {currentPage} of {totalPages}
+                </span>
+                <Button
+                  onClick={handleNextPage}
+                  disabled={currentPage === totalPages}
+                >
+                  Next
+                  <ChevronRight className="ml-2 size-4" />
+                </Button>
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>

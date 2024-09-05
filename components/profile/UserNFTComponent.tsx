@@ -1,5 +1,7 @@
 import React from "react"
+import { useRouter } from "next/navigation"
 
+import { APP_PATHS } from "@/config/Routes"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Table,
@@ -11,6 +13,7 @@ import {
 } from "@/components/ui/table"
 
 const UserNFTComponent = ({ NFTsData }: { NFTsData: any[] }) => {
+  const router = useRouter()
   return (
     <Card>
       <CardHeader>
@@ -32,14 +35,21 @@ const UserNFTComponent = ({ NFTsData }: { NFTsData: any[] }) => {
             <TableBody>
               {NFTsData.map((nft: any, index) => {
                 const amount = nft.amount
-                const action_type = nft.table_type_v1.split("::").slice(2)
+                const action_type = nft.table_type_v1
 
                 if (amount > 0) {
                   return (
                     <TableRow key={index}>
                       <TableCell>{nft.current_token_data.token_name}</TableCell>
                       <TableCell>{nft.amount}</TableCell>
-                      <TableCell>
+                      <TableCell
+                        className="cursor-pointer text-blue-500 hover:underline"
+                        onClick={() => {
+                          router.push(
+                            `${APP_PATHS.NFTS}/${nft.current_token_data.collection_id}`
+                          )
+                        }}
+                      >
                         {
                           nft.current_token_data.current_collection
                             .collection_name

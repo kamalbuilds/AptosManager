@@ -64,6 +64,8 @@ const ProfilePage = ({ params }: { params: any }) => {
   const coinTypes = tokensData.filter((asset) => asset.amount > 0).length
   const nftsOwned = NFTsData.filter((asset) => asset.amount > 0).length
 
+  console.log("tokensData", NFTsData, tokensData)
+
   return (
     <div className="flex flex-1 flex-col p-8">
       <div className="mb-8 flex flex-row items-center justify-between">

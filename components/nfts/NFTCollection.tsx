@@ -2,13 +2,12 @@
 
 import React, { useEffect, useState } from "react"
 import { fetchNFTCollectionByCollectionId } from "@/helpers/NFTSData/fetchNFTCollectionByCollectionId"
+import { RotatingLines } from "react-loader-spinner"
 
 import NFTCollectionData from "./components/NFTCollectionData"
 import NFTCollectionList from "./components/NFTCollectionList"
 
 const NFTCollection = ({ collectionId }: { collectionId: string }) => {
-  console.log("NFTCollectionById", collectionId)
-
   const [isLoading, setIsLoading] = useState(true)
   const [collectionDetails, setCollectionDetail] = useState([])
   const [collectionList, setCollectionList] = useState([])
@@ -36,12 +35,19 @@ const NFTCollection = ({ collectionId }: { collectionId: string }) => {
     }
   }, [collectionId])
 
-  console.log("isloading", isLoading)
-
   return (
     <div className="w-full px-12 py-4">
       {isLoading ? (
-        <div>loading...</div>
+        <div className="flex items-center justify-center">
+          <RotatingLines
+            visible={true}
+            width="40"
+            strokeColor="#2c68e7"
+            strokeWidth="5"
+            animationDuration="0.75"
+            ariaLabel="rotating-lines-loading"
+          />
+        </div>
       ) : (
         <>
           <NFTCollectionData collectionDetails={collectionDetails} />

@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect, useState } from "react"
 import Image from "next/image"
 
 import { shortenAddress } from "@/lib/shortenAddress"
@@ -45,8 +45,19 @@ const NFTCollectionListItem = ({ collection }: { collection: any }) => {
       "https://ipfs.io/ipfs/bafybeig6bepf5ci5fyysxlfefpjzwkfp7sarj6ed2f5a34kowgc6qenjfa/1009.png",
   }
 
-  //TODO: Resolve ipfs hash here @abhishek
-  const resolveURI = () => {}
+  // const [tokenURIDetails, setTokenURIDetails] = useState("")
+  // useEffect(() => {
+  //   if (collection?.token_uri) {
+  //     ;(async () => {
+  //       const res = await fetch(collection?.token_uri)
+  //       const response = await res.json()
+  //       console.log("response", response)
+  //       if (response.image) {
+  //         setTokenURIDetails(response.image)
+  //       }
+  //     })()
+  //   }
+  // }, [collection])
 
   const owner = collection.current_token_ownerships.find(
     (item: any) => item.amount === 1

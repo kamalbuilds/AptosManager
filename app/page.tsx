@@ -1,8 +1,6 @@
 "use client"
 
 import { useContext, useState } from "react"
-import { NFTData } from "@/constants/NFTDataByAccount"
-import { TokenData } from "@/constants/TokenDataByAccount"
 import { GlobalContext } from "@/context/GlobalContext"
 import { useWallet } from "@aptos-labs/wallet-adapter-react"
 
@@ -30,38 +28,32 @@ export default function Component() {
   } = useContext(GlobalContext)
 
   const handleExplore = async () => {
-    // if (!address) return
-
-    //TODO: Change this when not using constant
+    // // if (!address) return
+    // //TODO: Change this when not using constant
+    // // const { current_fungible_asset_balances, fungible_asset_activities } =
+    // //   await fetchTokensDataByAccount(address)
     // const { current_fungible_asset_balances, fungible_asset_activities } =
-    //   await fetchTokensDataByAccount(address)
-    const { current_fungible_asset_balances, fungible_asset_activities } =
-      TokenData
-
-    if (current_fungible_asset_balances) {
-      console.log(
-        "current_fungible_asset_balances",
-        current_fungible_asset_balances
-      )
-      setTokensData(current_fungible_asset_balances)
-    }
-
-    if (fungible_asset_activities) {
-      console.log("fungible_asset_activities", fungible_asset_activities)
-    }
-
-    // const { current_token_ownerships_v2, token_activities_v2 } =
-    //   await fetchNFTsDataByAccount(address)
-    const { current_token_ownerships_v2, token_activities_v2 } = NFTData
-
-    if (current_token_ownerships_v2) {
-      console.log("current_token_ownerships_v2", current_token_ownerships_v2)
-      setNFTsData(current_token_ownerships_v2)
-    }
-
-    if (token_activities_v2) {
-      console.log("token_activities_v2", token_activities_v2)
-    }
+    //   TokenData
+    // if (current_fungible_asset_balances) {
+    //   console.log(
+    //     "current_fungible_asset_balances",
+    //     current_fungible_asset_balances
+    //   )
+    //   setTokensData(current_fungible_asset_balances)
+    // }
+    // if (fungible_asset_activities) {
+    //   console.log("fungible_asset_activities", fungible_asset_activities)
+    // }
+    // // const { current_token_ownerships_v2, token_activities_v2 } =
+    // //   await fetchNFTsDataByAccount(address)
+    // const { current_token_ownerships_v2, token_activities_v2 } = NFTData
+    // if (current_token_ownerships_v2) {
+    //   console.log("current_token_ownerships_v2", current_token_ownerships_v2)
+    //   setNFTsData(current_token_ownerships_v2)
+    // }
+    // if (token_activities_v2) {
+    //   console.log("token_activities_v2", token_activities_v2)
+    // }
   }
 
   return (

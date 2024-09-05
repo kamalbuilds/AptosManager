@@ -36,32 +36,14 @@ const NFTCollectionData = ({
               </div>
               <div>
                 <p className="text-sm font-semibold">Floor Price</p>
-                <p className="text-sm">10 APT</p>
+                <p className="text-sm">NAN APT</p>
               </div>
               <div>
                 <p className="text-sm font-semibold">24h Volume</p>
-                <p className="text-sm">100 APT</p>
+                <p className="text-sm">NAN APT</p>
               </div>
             </div>
           </div>
-          {/* <div>
-              <h3 className="mb-4 text-xl font-semibold">NFTs in Collection</h3>
-              <div className="grid grid-cols-2 gap-4 sm:grid-cols-3">
-                {selectedCollection.nfts.map((nft: any, index: number) => (
-                  <div key={index} className="rounded-lg border p-2">
-                    <img
-                      src={nft.image_url}
-                      alt={nft.name}
-                      className="mb-2 h-auto w-full rounded-lg"
-                    />
-                    <p className="text-sm font-semibold">{nft.name}</p>
-                    <p className="text-xs text-gray-600">
-                      Token ID: {nft.token_id}
-                    </p>
-                  </div>
-                ))}
-              </div>
-            </div> */}
         </div>
       </CardContent>
     </Card>

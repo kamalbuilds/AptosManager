@@ -33,5 +33,5 @@ export const APP_ROUTES = [
     title: "AptosNamingService",
     Icon: Image,
     href: "/aptosnamingservice",
-  }
+  },
 ]
