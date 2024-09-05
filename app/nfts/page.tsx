@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { getNFTCollectionData } from "@/helpers/NFTSData"
 import { fetchNFTCollectionByCollectionId } from "@/helpers/NFTSData/fetchNFTCollectionByCollectionId"
@@ -70,6 +70,10 @@ export default function Component() {
     const res = await fetchNFTCollectionByCollectionId(searchTerm)
     console.log("Res", res)
   }
+
+  useEffect(() => {
+    handleFetchCollectionData(1)
+  }, [])
 
   return (
     <div className="container mx-auto p-4">

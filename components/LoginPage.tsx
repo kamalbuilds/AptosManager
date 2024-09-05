@@ -72,7 +72,6 @@ export function LoginPage() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-8">
-            <WalletSelector />
 
             <Separator />
 

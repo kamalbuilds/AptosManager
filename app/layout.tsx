@@ -9,7 +9,7 @@ import { SidebarComponent } from "@/components/sidebar"
 import { SiteHeader } from "@/components/site-header"
 import { TailwindIndicator } from "@/components/tailwind-indicator"
 import { ThemeProvider } from "@/components/theme-provider"
-
+import { Toaster } from "@/components/ui/toaster"
 import Provider from "./Provider"
 
 export const metadata: Metadata = {
@@ -52,6 +52,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
                   <div className="flex flex-1 flex-row">
                     <SidebarComponent />
                     {children}
+                    <Toaster />
                   </div>
                 </div>
                 <TailwindIndicator />

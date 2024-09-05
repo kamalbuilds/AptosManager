@@ -5,11 +5,12 @@ export const APP_PATHS = {
   PROFILE: "/profile",
   TOKENS: "/tokens",
   NFTS: "/nfts",
+  APTOSNAMING: "/aptosnamingservice",
 }
 
 export const APP_ROUTES = [
   {
-    title: "Overivew",
+    title: "Overview",
     Icon: BarChart,
     href: APP_PATHS.OVERVIEW,
   },
@@ -28,4 +29,9 @@ export const APP_ROUTES = [
     Icon: Image,
     href: APP_PATHS.NFTS,
   },
+  {
+    title: "AptosNamingService",
+    Icon: Image,
+    href: "/aptosnamingservice",
+  }
 ]
