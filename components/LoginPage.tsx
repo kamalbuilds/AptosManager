@@ -15,12 +15,14 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 import SocialIcons from "./SocialIcons"
 import { WalletSelector } from "./WalletSelector"
 import { Separator } from "./ui/separator"
+import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk"
 
-export function LoginPage() {
+export  function LoginPage() {
   const {
     address,
     setAddress,
@@ -30,14 +32,32 @@ export function LoginPage() {
     setNFTsTransferData,
   } = useContext(GlobalContext)
 
-  const [userAddress, setUserAddress] = useState("")
-  const router = useRouter()
+  const [userInput, setUserInput] = useState("");
+  const [searchType, setSearchType] = useState("address");
+  const router = useRouter();
+
+  const config = new AptosConfig({ network: Network.TESTNET });
+  const aptos = new Aptos(config);
 
   const handleConnect = async () => {
-    if (!userAddress) return
-    setAddress(userAddress)
+    if (!userInput) return
+    let resolvedAddress = userInput
+
+    if (searchType === "name") {
+
+      const owner = await aptos.getOwnerAddress({name: userInput});
+      if (!owner) {
+        console.log("User not found")
+        return
+      } else {
+        console.log("Owner", owner)
+        resolvedAddress = owner.toString();
+      }
+    }
+
+    setAddress(resolvedAddress)
     try {
-      const res = await fetchAccountData(userAddress)
+      const res = await fetchAccountData(resolvedAddress)
       console.log("userAddress", res)
 
       if (res) {
@@ -50,11 +70,10 @@ export function LoginPage() {
 
         if (userTokensDetails) setTokensData(userTokensDetails)
         if (userNFTDetails) setNFTsData(userNFTDetails)
-        if (userTokenTransferDetails)
-          setTokenTransferData(userTokenTransferDetails)
+        if (userTokenTransferDetails) setTokenTransferData(userTokenTransferDetails)
         if (userNFTTransferDetails) setNFTsTransferData(userNFTTransferDetails)
 
-        router.push(`${APP_PATHS.PROFILE}/${userAddress}`)
+        router.push(`${APP_PATHS.PROFILE}/${resolvedAddress}`)
       }
     } catch (error) {
       console.log("Error", error)
@@ -72,18 +91,30 @@ export function LoginPage() {
         </CardHeader>
         <CardContent>
           <div className="flex flex-col gap-8">
-
             <Separator />
-
-            <div className="flex flex-col gap-4">
-              <Input
-                type="text"
-                placeholder="Enter Aptos address"
-                value={userAddress}
-                onChange={(e) => setUserAddress(e.target.value)}
-              />
-              <Button onClick={handleConnect}>Explore</Button>
-            </div>
+            <Tabs defaultValue="address" onValueChange={(value) => setSearchType(value)}>
+              <TabsList className="grid w-full grid-cols-2">
+                <TabsTrigger value="address">Address</TabsTrigger>
+                <TabsTrigger value="name">Aptos Name</TabsTrigger>
+              </TabsList>
+              <TabsContent value="address">
+                <Input
+                  type="text"
+                  placeholder="Enter Aptos address"
+                  value={userInput}
+                  onChange={(e) => setUserInput(e.target.value)}
+                />
+              </TabsContent>
+              <TabsContent value="name">
+                <Input
+                  type="text"
+                  placeholder="Enter Aptos name (e.g., kamal.apt)"
+                  value={userInput}
+                  onChange={(e) => setUserInput(e.target.value)}
+                />
+              </TabsContent>
+            </Tabs>
+            <Button onClick={handleConnect}>Explore</Button>
             <div className="mt-4 text-center text-sm">
               Reach out to us for any query.
               <SocialIcons />

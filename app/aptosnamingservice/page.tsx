@@ -7,19 +7,21 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 
-import { Aptos, AptosConfig, Network } from '@aptos-labs/ts-sdk'
+import { Account, AnyRawTransaction, Aptos, AptosConfig, Network } from '@aptos-labs/ts-sdk'
 import { useToast } from '@/hooks/use-toast'
-import { useWallet } from '@aptos-labs/wallet-adapter-react'
+import { InputTransactionData, useWallet } from '@aptos-labs/wallet-adapter-react'
 
 type Policy = 'domain' | 'subdomain:follow-domain' | 'subdomain:independent';
 
 export default function Component() {
   const [loading, setLoading] = useState(false);
 
-  const { signAndSubmitTransaction , account , connected } = useWallet();
+  const { signAndSubmitTransaction , account  } = useWallet();
   const { toast } = useToast();
 
-  console.log("account", account, connected)
+
+
+  console.log("account", account)
 
   const config = new AptosConfig({ network: Network.TESTNET });
   const aptos = new Aptos(config);
@@ -86,29 +88,43 @@ export default function Component() {
     }
   }
 
-// @kamal make this work , the sender is having type conflicts , we have the wallet adapter but
-//  how to sign and send with it?
+// @kamal change the router address based on if the user is on testnet or mainnet
 const RegisterName = async (name: string, policy: any) => {
-    console.log("i m here")
-    const txn = await aptos.registerName({
-        sender: account?.address!,
-        name: name,
-        expiration: {
-            policy,
-
-        },
-    });
-
-    console.log("txn", txn)
-
-    const pendingtxn = await aptos.signAndSubmitTransaction({
-        signer: account?.address!,
-        data: txn,
-    });
+    console.log("i m here");
 
 
-    console.log("txn", pendingtxn)
-  return { success: true, message: `Registered ${name} with policy ${policy}` }
+    const transaction: InputTransactionData = {
+      sender: account?.address, // Include the sender's address
+      data: {
+        function: "0x5f8fd2347449685cf41d4db97926ec3a096eaf381332be4f1318ad4d16a8497c::router::register_domain",
+        typeArguments: [],
+        functionArguments: [name, "31536000", null , null], // The actual function arguments, including the name and policy
+      },
+      options: {
+        maxGasAmount: 10000, // Example options, you can adjust as needed
+        gasUnitPrice: 100 // Adjust gas price if needed
+      },
+    };
+
+    console.log("transaction", transaction);
+
+    const signit = await signAndSubmitTransaction(transaction);
+
+    // const pendingtxn = await aptos.signAndSubmitTransaction({
+    //   signer: account,
+    //   transaction: transaction,
+    // });
+
+    // const txn = {
+    //     type: 'aptos_register_name',
+    //     sender: account?.address!,
+    //     name: name,
+    //     expiration: { policy: policy },
+    // };
+
+    // console.log("txn", txn);
+
+    return { success: true, message: `Registered ${name} with policy ${policy}` };
 }
 
 const mockRenewDomain = async (name: string) => {

@@ -68,11 +68,13 @@ const NFTCollectionListItem = ({ collection }: { collection: any }) => {
     "..." +
     collection.token_data_id.slice(-5)
 
+
+    console.log(collection,"collection kamakla")
   return (
     <TableRow>
       <TableCell>
         <Image
-          src={tokenURI.image}
+          src={collection.token_uri}
           width={40}
           height={40}
           alt={tokenURI.name}

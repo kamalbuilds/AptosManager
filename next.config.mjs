@@ -2,7 +2,14 @@
 const nextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['ipfs.io'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: '**', // This allows any hostname
+        port: '',
+        pathname: '/**', // This allows any path
+      },
+    ],
   },
   experimental: {
     appDir: true,

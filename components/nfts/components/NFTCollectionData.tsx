@@ -29,9 +29,9 @@ const NFTCollectionData = ({
                 </p>
               </div>
               <div>
-                <p className="text-sm font-semibold">Max Supply</p>
+                <p className="text-sm font-semibold">Curr Supply</p>
                 <p className="text-sm">
-                  {collectionDetails.max_supply.toLocaleString()}
+                  {collectionDetails.current_supply.toLocaleString()}
                 </p>
               </div>
               <div>

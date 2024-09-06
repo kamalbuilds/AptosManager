@@ -6,10 +6,8 @@ import { BASE_MAINNET_URL } from "@/config/url.config"
 export async function POST(req: NextRequest) {
   try {
     const { page } = await req.json()
-    console.log("Page <<>>", page)
 
     const operationsDoc = getNFTsDataQuery(page)
-    console.log("OperationDoc", operationsDoc)
 
     const response = await fetch(BASE_MAINNET_URL, {
       method: "POST",
