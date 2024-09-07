@@ -100,6 +100,10 @@ export default function Component() {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full max-w-md"
           />
+          <Button onClick={handleFetchCollectionDataByCollectionName}>
+            <Search className="mr-2 size-4" />
+            Search
+          </Button>
           <Button
             disabled={searchTerm.length <= 0}
             onClick={() => {
@@ -108,10 +112,6 @@ export default function Component() {
             }}
           >
             Clear
-          </Button>
-          <Button onClick={handleFetchCollectionDataByCollectionName}>
-            <Search className="mr-2 size-4" />
-            Search
           </Button>
         </div>
 
