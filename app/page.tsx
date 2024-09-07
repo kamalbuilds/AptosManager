@@ -4,8 +4,6 @@ import { useContext, useState } from "react"
 import { GlobalContext } from "@/context/GlobalContext"
 import { useWallet } from "@aptos-labs/wallet-adapter-react"
 
-import { fetchNFTsDataByAccount } from "@/config/fetchNFTsDataByAccount"
-import { fetchTokensDataByAccount } from "@/config/fetchTokensDataByAccount"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { LoginPage } from "@/components/LoginPage"
@@ -55,7 +53,6 @@ export default function Component() {
     //   console.log("token_activities_v2", token_activities_v2)
     // }
   }
-
 
   return (
     <>

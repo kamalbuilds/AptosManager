@@ -1,12 +1,14 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getTokensDataQueryByAccount } from "@/queries/TokensData/TokensDataByAccount.query"
+import { getTokensDataBySymbol } from "@/queries/TokensData/TokensDataByName"
 
 import { BASE_MAINNET_URL } from "@/config/url.config"
 
 export async function POST(req: NextRequest) {
   try {
-    const { accountAddress } = await req.json()
-    const operationsDoc = getTokensDataQueryByAccount(accountAddress)
+    const { symbol } = await req.json()
+    console.log("coinSymbol", symbol)
+
+    const operationsDoc = getTokensDataBySymbol(symbol)
     console.log("OperationDoc", operationsDoc)
 
     const response = await fetch(BASE_MAINNET_URL, {
@@ -22,9 +24,9 @@ export async function POST(req: NextRequest) {
     })
 
     /**
-     * Gives 2 array of objects
-     * 1.current_fungible_asset_balances -> coins that the user has
-     * 2.fungible_asset_activities -> activities of the assets/coins
+     * Gives 4 array of objects
+     * 1.current_token_ownerships_v2 -> NFTs that the user has
+     * 2.token_activities_v2 -> transfer activities of the NFTs
      */
 
     const result = await response.json()
