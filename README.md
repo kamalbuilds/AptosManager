@@ -1,4 +1,4 @@
-# AptoData
+# AptosManager
 
 Debank but for Aptos
 

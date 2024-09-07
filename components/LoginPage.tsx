@@ -84,7 +84,7 @@ export  function LoginPage() {
     <div className="flex h-[80vh] w-full items-center justify-center px-4">
       <Card className="mx-auto w-2/3 max-w-lg">
         <CardHeader>
-          <CardTitle className="text-2xl">AptoBank</CardTitle>
+          <CardTitle className="text-2xl">AptosManager</CardTitle>
           <CardDescription>
             Your personalised Bank on Aptos Blockchain
           </CardDescription>
