@@ -1,6 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
+import { useRouter } from "next/navigation"
 import {
   fetchTokenDataBySymbol,
   fetchTokensDataByName,
@@ -8,6 +9,7 @@ import {
 import { ChevronLeft, ChevronRight, Coins, Search } from "lucide-react"
 import { RotatingLines } from "react-loader-spinner"
 
+import { APP_PATHS } from "@/config/Routes"
 import { NODEREAL_URL } from "@/config/url.config"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -24,6 +26,8 @@ import {
 } from "@/components/ui/table"
 
 export default function TokenPage() {
+  const router = useRouter()
+
   const [searchTerm, setSearchTerm] = useState("")
   const [searchType, setSearchType] = useState("name")
   const [coins, setCoins] = useState([])
@@ -113,9 +117,6 @@ export default function TokenPage() {
     handleGetTokenData(1)
   }
 
-  console.log("Coins", coins)
-  console.log("searchTokenDetails", searchTokenDetails)
-
   return (
     <div className="container mx-auto p-4">
       <h1 className="mb-8 text-3xl font-bold">Aptos Coin Explorer</h1>
@@ -144,8 +145,10 @@ export default function TokenPage() {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full max-w-md"
             />
-            <Button onClick={handleClear}>Clear</Button>
-            <Button onClick={handleSearch}>
+            <Button disabled={searchTerm.length <= 0} onClick={handleClear}>
+              Clear
+            </Button>
+            <Button onClick={handleSearch} disabled={searchTerm.length <= 0}>
               <Search className="mr-2 h-4 w-4" />
               Search
             </Button>
@@ -183,7 +186,14 @@ export default function TokenPage() {
                     {!searchTokenDetails.length && <div>No Data available</div>}
                     {searchTokenDetails.map((coin: any, index) => (
                       <TableRow key={index}>
-                        <TableCell>{coin.name}</TableCell>
+                        <TableCell
+                          className="cursor-pointer text-blue-500 hover:underline"
+                          onClick={() => {
+                            router.push(`${APP_PATHS.TOKENS}/${coin.coin_type}`)
+                          }}
+                        >
+                          {coin.name}
+                        </TableCell>
                         <TableCell>{coin.symbol}</TableCell>
                         <TableCell>{coin.decimals}</TableCell>
                         <TableCell>{coin.coin_type.slice(0, 90)}</TableCell>
@@ -244,7 +254,14 @@ export default function TokenPage() {
                     {coins.map((coin: any, index) => (
                       <TableRow key={index}>
                         <TableCell>{coin.rank}</TableCell>
-                        <TableCell>{coin.name}</TableCell>
+                        <TableCell
+                          className="cursor-pointer text-blue-500 hover:underline"
+                          onClick={() => {
+                            router.push(`${APP_PATHS.TOKENS}/${coin.coin_type}`)
+                          }}
+                        >
+                          {coin.name}
+                        </TableCell>
                         <TableCell>{coin.price ?? "-"}</TableCell>
                         <TableCell>{coin.symbol}</TableCell>
                         <TableCell>

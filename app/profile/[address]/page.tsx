@@ -1,8 +1,6 @@
 "use client"
 
 import React, { useContext, useEffect } from "react"
-import { NFTData } from "@/constants/NFTDataByAccount"
-import { TokenData } from "@/constants/TokenDataByAccount"
 import { GlobalContext } from "@/context/GlobalContext"
 
 import { fetchAccountData } from "@/config/fetchAccountData"
