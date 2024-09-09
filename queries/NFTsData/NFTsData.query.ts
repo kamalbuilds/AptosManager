@@ -56,9 +56,7 @@ export const getNFTsDataQueryByCollectionId = (collectionId: string) => {
 export const getNFTsDataQueryByCollectionName = (collectionName: string) => {
   return `
   query MyQuery {
-  current_collections_v2(
-    where: {collection_name: {_in: "${collectionName}"}}
-  ) {
+  current_collections_v2(where: {collection_name: {_regex: "${collectionName}"}}) {
     collection_id
     collection_name
     collection_properties

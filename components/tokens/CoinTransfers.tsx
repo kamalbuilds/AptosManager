@@ -8,67 +8,116 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import CoinTransferListItem from "./components/CoinTransferListItem"
-import { fetchTokenDetails } from "@/helpers/TokensData"
 import { Button } from "../ui/button"
 import { RotatingLines } from "react-loader-spinner"
+import { useGetCoinTransfers } from "@/models/Coins"
+import { ChevronLeft, ChevronRight } from "lucide-react"
+
 const CoinTransfers = ({ tokenId, decimal }: { tokenId: string, decimal: number }) => {
-
-    const [isloading, setIsloading] = useState(false)
+    const totalPages = 10
+    const limit = 20
     const [coinActivities, setCoinActivities] = useState([])
+    const [currentPage, setCurrentPage] = useState(1)
 
-    const handleGetTokenDetails = async () => {
-        try {
-            setIsloading(true)
-            const res = await fetchTokenDetails(tokenId)
-            console.log("Res", res)
-            if (res.coin_activities) {
-                setIsloading(false)
-                setCoinActivities(res.coin_activities)
+    const { mutate: fetchCoinTransfers, isPending: isLoading } = useGetCoinTransfers();
+
+    const handleGetTokenDetails = async (currentPage: number) => {
+
+        const offset = (currentPage - 1) * limit;
+
+        fetchCoinTransfers({
+            coinType: tokenId,
+            page: offset,
+            pageSize: limit
+        }, {
+            onSuccess: (res) => {
+                setCoinActivities(res)
+            },
+            onError: (err) => {
+                console.log("Err", err);
+                setCoinActivities([])
             }
-        } catch (error) {
-            setIsloading(false)
-        }
+        })
+
     }
 
     useEffect(() => {
-
         if (tokenId) {
-            handleGetTokenDetails();
+            handleGetTokenDetails(currentPage);
         }
+    }, [tokenId, currentPage])
 
-    }, [tokenId])
+    const handlePrevPage = () => {
+        setCurrentPage((prev) => Math.max(prev - 1, 1))
+    }
+
+    const handleNextPage = () => {
+        setCurrentPage((prev) => Math.min(prev + 1, totalPages))
+    }
+
 
 
     return (
-        <Table>
-            <TableHeader>
-                <TableRow>
-                    <TableHead>#</TableHead>
-                    <TableHead>Status</TableHead>
-                    <TableHead>From Address</TableHead>
-                    <TableHead>Amount</TableHead>
-                    <TableHead>Action Type</TableHead>
-                    <TableHead>Date</TableHead>
-                </TableRow>
-            </TableHeader>
-            {isloading ? (
-                <RotatingLines
-                    visible={true}
-                    width="40"
-                    strokeColor="#2c68e7"
-                    strokeWidth="5"
-                    animationDuration="0.75"
-                    ariaLabel="rotating-lines-loading"
-                />
-            ) : (
-                <TableBody>
-                    {coinActivities.map((collection: any, index: any) => {
-                        return <CoinTransferListItem tokenTransfer={collection} key={index} decimal={decimal} />
-                    })}
-                </TableBody>
-            )}
+        <>
+            {isLoading && <RotatingLines
+                visible={true}
+                width="40"
+                strokeColor="#2c68e7"
+                strokeWidth="5"
+                animationDuration="0.75"
+                ariaLabel="rotating-lines-loading"
+            />}
 
-        </Table>
+            {!isLoading && (
+                <>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>#</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead>From Address</TableHead>
+                                <TableHead>Amount</TableHead>
+                                <TableHead>Action Type</TableHead>
+                                <TableHead>Date</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        {isLoading ? (
+                            <RotatingLines
+                                visible={true}
+                                width="40"
+                                strokeColor="#2c68e7"
+                                strokeWidth="5"
+                                animationDuration="0.75"
+                                ariaLabel="rotating-lines-loading"
+                            />
+                        ) : (
+                            <TableBody>
+                                {coinActivities.map((collection: any, index: any) => {
+                                    return <CoinTransferListItem tokenTransfer={collection} key={index} decimal={decimal} />
+                                })}
+                            </TableBody>
+                        )}
+
+                    </Table>
+                    <div className="mt-4 flex items-center justify-between">
+                        <Button onClick={handlePrevPage} disabled={currentPage === 1}>
+                            <ChevronLeft className="mr-2 h-4 w-4" />
+                            Previous
+                        </Button>
+                        <span>
+                            Page {currentPage} of {totalPages}
+                        </span>
+                        <Button
+                            onClick={handleNextPage}
+                            disabled={currentPage === totalPages}
+                        >
+                            Next
+                            <ChevronRight className="ml-2 h-4 w-4" />
+                        </Button>
+                    </div>
+                </>
+            )}
+        </>
     )
 }
 

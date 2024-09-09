@@ -149,7 +149,7 @@ export default function Component() {
                     return (
                       <TableRow
                         key={index}
-                        className="cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800"
+                        className="h-[50px] cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800"
                       >
                         <TableCell>{adjustedIndex}</TableCell>
                         <TableCell

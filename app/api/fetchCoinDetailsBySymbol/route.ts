@@ -1,15 +1,13 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getTokensDataBySymbol } from "@/queries/TokensData/TokensDataByName"
+import { getCoinDetailsQueryBySymbol } from "@/queries/CoinsQuery"
 
 import { BASE_MAINNET_URL } from "@/config/url.config"
 
 export async function POST(req: NextRequest) {
   try {
     const { symbol } = await req.json()
-    console.log("coinSymbol", symbol)
 
-    const operationsDoc = getTokensDataBySymbol(symbol)
-    console.log("OperationDoc", operationsDoc)
+    const operationsDoc = getCoinDetailsQueryBySymbol(symbol)
 
     const response = await fetch(BASE_MAINNET_URL, {
       method: "POST",
@@ -22,12 +20,6 @@ export async function POST(req: NextRequest) {
         operationName: "MyQuery",
       }),
     })
-
-    /**
-     * Gives 4 array of objects
-     * 1.current_token_ownerships_v2 -> NFTs that the user has
-     * 2.token_activities_v2 -> transfer activities of the NFTs
-     */
 
     const result = await response.json()
 
