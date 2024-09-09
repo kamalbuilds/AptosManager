@@ -4,7 +4,7 @@ export const APP_PATHS = {
   AGGPORTFOLIO: "/aggregated-portfolio",
   PROFILE: "/profile",
   TOKENS: "/tokens",
-  NFTS: "/nfts",
+  NFTS: "/collections",
   APTOSNAMING: "/aptosnamingservice",
 }
 

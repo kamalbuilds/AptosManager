@@ -2,6 +2,11 @@
 
 import { useState } from "react"
 import { useRouter } from "next/navigation"
+import {
+  useGetCoinDetailsByName,
+  useGetCoinDetailsBySymbol,
+  useGetCoinLists,
+} from "@/models/Coins"
 import { ChevronLeft, ChevronRight, Search } from "lucide-react"
 import { RotatingLines } from "react-loader-spinner"
 
@@ -19,7 +24,6 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table"
-import { useGetCoinDetailsByName, useGetCoinDetailsBySymbol, useGetCoinLists } from "@/models/Coins"
 
 export default function TokenPage() {
   const router = useRouter()
@@ -43,36 +47,38 @@ export default function TokenPage() {
 
   const { isLoading, data: coinLists } = useGetCoinLists({
     page: currentPage - 1,
-    pageSize: 10
-  });
+    pageSize: 10,
+  })
 
-  const { mutate: fetchCoinDetailsByName, isPending: searching } = useGetCoinDetailsByName();
-  const { mutate: fetchCoinDetailsBySymbol, isPending: searchingCoinDetails } = useGetCoinDetailsBySymbol();
+  const { mutate: fetchCoinDetailsByName, isPending: searching } =
+    useGetCoinDetailsByName()
+  const { mutate: fetchCoinDetailsBySymbol, isPending: searchingCoinDetails } =
+    useGetCoinDetailsBySymbol()
 
   const handleSearch = async () => {
     if (searchType === "name") {
       fetchCoinDetailsByName(searchTerm, {
         onSuccess: (response) => {
-          console.log("fetchCoinDetailsByName", response);
+          console.log("fetchCoinDetailsByName", response)
           setSearchTokenDetails(response)
         },
         onError: (err) => {
-          console.log("Err", err);
+          console.log("Err", err)
           setSearchTokenDetails([])
-        }
+        },
       })
     }
 
     if (searchType === "symbol") {
       fetchCoinDetailsBySymbol(searchTerm, {
         onSuccess: (response) => {
-          console.log("fetchCoinDetailsBySymbol", response);
+          console.log("fetchCoinDetailsBySymbol", response)
           setSearchTokenDetails(response)
         },
         onError: (err) => {
-          console.log("Err", err);
+          console.log("Err", err)
           setSearchTokenDetails([])
-        }
+        },
       })
     }
   }
@@ -81,6 +87,8 @@ export default function TokenPage() {
     setSearchTerm("")
     setSearchTokenDetails([])
   }
+
+  console.log("isLoading", isLoading)
 
   return (
     <div className="container mx-auto p-4">
@@ -120,17 +128,18 @@ export default function TokenPage() {
           </div>
         </div>
 
-
-        {searching || isLoading || searchingCoinDetails && (
-          <RotatingLines
-            visible={true}
-            width="40"
-            strokeColor="#2c68e7"
-            strokeWidth="5"
-            animationDuration="0.75"
-            ariaLabel="rotating-lines-loading"
-          />
-        )}
+        {searching ||
+          isLoading ||
+          (searchingCoinDetails && (
+            <RotatingLines
+              visible={true}
+              width="40"
+              strokeColor="#2c68e7"
+              strokeWidth="5"
+              animationDuration="0.75"
+              ariaLabel="rotating-lines-loading"
+            />
+          ))}
 
         {searchTokenDetails.length ? (
           <Card>
