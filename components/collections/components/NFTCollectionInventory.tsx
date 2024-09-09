@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react"
+import Image from "next/image"
 import { useGetNFTTokenDataByCollectionId } from "@/models/Collections/hooks/getNFTTokenDataByCollectionId"
 import { ChevronRight } from "lucide-react"
 import { RotatingLines } from "react-loader-spinner"
@@ -60,26 +61,41 @@ const NFTCollectionInventory = ({ collectionId }: { collectionId: string }) => {
         <>
           <div className="flex flex-wrap gap-8">
             {nftInventory.map((inventory: any) => {
-              const owner = inventory.current_token_ownerships.find(
+              const owner = inventory?.current_token_ownerships.find(
                 (owner) => owner.amount > 0
               )
               return (
                 <Card className="w-[450px]">
                   <CardHeader>
                     <CardTitle className="capitalize">
-                      {inventory.token_name}
+                      <Image
+                        src={inventory.token_uri}
+                        width={140}
+                        height={140}
+                        alt={inventory.token_name}
+                      />
                     </CardTitle>
-                    <CardDescription>{inventory.description}</CardDescription>
+                    <CardDescription></CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <div>
-                      <div className="flex gap-4">
-                        <p>Supply:</p>
-                        <p>{inventory.supply}</p>
-                      </div>
-                      <div className="flex gap-4">
-                        <p>Owner</p>
-                        <p>{shortenAddress(owner.owner_address, 8)}</p>
+                    <h2 className="scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0">
+                      {inventory.token_name}
+                    </h2>
+
+                    <div className="flex flex-col gap-4">
+                      <p className="leading-7 text-gray-700 [&:not(:first-child)]:mt-6">
+                        {inventory.description.slice(0, 120)}
+                      </p>
+
+                      <div>
+                        <div className="flex gap-4">
+                          <p>Supply:</p>
+                          <p>{inventory.supply}</p>
+                        </div>
+                        <div className="flex gap-4">
+                          <p>Owner</p>
+                          <p>{shortenAddress(owner?.owner_address, 8)}</p>
+                        </div>
                       </div>
                     </div>
                   </CardContent>
