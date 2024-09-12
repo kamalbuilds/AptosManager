@@ -2173,6 +2173,14 @@ eastasianwidth@^0.2.0:
   resolved "https://registry.npmjs.org/eastasianwidth/-/eastasianwidth-0.2.0.tgz"
   integrity sha512-I88TYZWc9XiYHRQ4/3c5rjjfgkjhLyW2luGIheGERbNQ6OY7yTybanSpDXZa8y7VUP9YmDcYa+eyq4ca7iLqWA==
 
+echelon-sdk-aptosmanager@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.npmjs.org/echelon-sdk-aptosmanager/-/echelon-sdk-aptosmanager-1.0.0.tgz"
+  integrity sha512-vY/gsXgAdy16J7p85h8dC+e+1OgHmb4ou5XC9HS44E65eqgYz1c1gn4Y5b2/5nsV/vSe/u+Spaej6WAdEEtv7w==
+  dependencies:
+    "@aptos-labs/ts-sdk" "^1.22.2"
+    "@thalalabs/surf" "^1.7.1"
+
 ed2curve@^0.3.0:
   version "0.3.0"
   resolved "https://registry.npmjs.org/ed2curve/-/ed2curve-0.3.0.tgz"
