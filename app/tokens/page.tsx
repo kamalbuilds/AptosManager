@@ -1,14 +1,16 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useState } from "react"
+import { useRouter } from "next/navigation"
 import {
-  fetchTokenDataBySymbol,
-  fetchTokensDataByName,
-} from "@/helpers/TokensData"
-import { ChevronLeft, ChevronRight, Coins, Search } from "lucide-react"
+  useGetCoinDetailsByName,
+  useGetCoinDetailsBySymbol,
+  useGetCoinLists,
+} from "@/models/Coins"
+import { ChevronLeft, ChevronRight, Search } from "lucide-react"
 import { RotatingLines } from "react-loader-spinner"
 
-import { NODEREAL_URL } from "@/config/url.config"
+import { APP_PATHS } from "@/config/Routes"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -24,9 +26,10 @@ import {
 } from "@/components/ui/table"
 
 export default function TokenPage() {
+  const router = useRouter()
+
   const [searchTerm, setSearchTerm] = useState("")
   const [searchType, setSearchType] = useState("name")
-  const [coins, setCoins] = useState([])
   const [currentPage, setCurrentPage] = useState(1)
 
   const [searchTokenDetails, setSearchTokenDetails] = useState([])
@@ -35,88 +38,57 @@ export default function TokenPage() {
   const handlePrevPage = () => {
     const page = Math.max(currentPage - 1, 1)
     setCurrentPage((prev) => Math.max(prev - 1, 1))
-    console.log("Page", page)
-
-    handleGetTokenData(page)
   }
 
   const handleNextPage = () => {
     const page = Math.min(currentPage + 1, totalPages)
     setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-    console.log("Page >>", page)
-
-    handleGetTokenData(page)
   }
 
-  const [isLoading, setIsLoading] = useState(false)
-  const handleGetTokenData = async (page?: number) => {
-    try {
-      const currPage = page ? page - 1 : 0
+  const { isLoading, data: coinLists } = useGetCoinLists({
+    page: currentPage - 1,
+    pageSize: 10,
+  })
 
-      setIsLoading(true)
-      const url = `${NODEREAL_URL}/api/coin?page=${currPage}&pageSize=10`
-      const res = await fetch(url);
-
-      console.log(res,"res")
-
-      const response = await res.json()
-      console.log("Token Collection >>", response)
-      if (response.msg === "success") {
-        setIsLoading(false)
-        setCoins(response.data.coins_list)
-      }
-      return response
-    } catch (error) {
-      setIsLoading(false)
-      console.log("Error", error)
-      return null
-    }
-  }
-
-  useEffect(() => {
-    handleGetTokenData(1)
-  }, [])
+  const { mutate: fetchCoinDetailsByName, isPending: searching } =
+    useGetCoinDetailsByName()
+  const { mutate: fetchCoinDetailsBySymbol, isPending: searchingCoinDetails } =
+    useGetCoinDetailsBySymbol()
 
   const handleSearch = async () => {
-    // Search by name or symbol
-
-    if (searchTerm === "name") {
-      setIsLoading(true)
-      const response = await fetchTokensDataByName(searchTerm)
-      console.log("Token Collection >>", response)
-
-      if (response) {
-        setIsLoading(false)
-        setSearchTokenDetails(response.coin_infos)
-      } else {
-        setIsLoading(false)
-        setSearchTokenDetails([])
-      }
+    if (searchType === "name") {
+      fetchCoinDetailsByName(searchTerm, {
+        onSuccess: (response) => {
+          console.log("fetchCoinDetailsByName", response)
+          setSearchTokenDetails(response)
+        },
+        onError: (err) => {
+          console.log("Err", err)
+          setSearchTokenDetails([])
+        },
+      })
     }
 
-    if (searchTerm === "symbol") {
-      setIsLoading(true)
-      const response = await fetchTokenDataBySymbol(searchTerm)
-      console.log("Token Collection >>", response)
-
-      if (response) {
-        setIsLoading(false)
-        setSearchTokenDetails(response.coin_infos)
-      } else {
-        setIsLoading(false)
-        setSearchTokenDetails([])
-      }
+    if (searchType === "symbol") {
+      fetchCoinDetailsBySymbol(searchTerm, {
+        onSuccess: (response) => {
+          console.log("fetchCoinDetailsBySymbol", response)
+          setSearchTokenDetails(response)
+        },
+        onError: (err) => {
+          console.log("Err", err)
+          setSearchTokenDetails([])
+        },
+      })
     }
   }
 
   const handleClear = () => {
     setSearchTerm("")
     setSearchTokenDetails([])
-    handleGetTokenData(1)
   }
 
-  console.log("Coins", coins)
-  console.log("searchTokenDetails", searchTokenDetails)
+  console.log("isLoading", isLoading)
 
   return (
     <div className="container mx-auto p-4">
@@ -146,13 +118,28 @@ export default function TokenPage() {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full max-w-md"
             />
-            <Button onClick={handleSearch}>
+            <Button onClick={handleSearch} disabled={searchTerm.length <= 0}>
               <Search className="mr-2 h-4 w-4" />
               Search
             </Button>
-            <Button onClick={handleClear}>Clear</Button>
+            <Button disabled={searchTerm.length <= 0} onClick={handleClear}>
+              Clear
+            </Button>
           </div>
         </div>
+
+        {searching ||
+          isLoading ||
+          (searchingCoinDetails && (
+            <RotatingLines
+              visible={true}
+              width="40"
+              strokeColor="#2c68e7"
+              strokeWidth="5"
+              animationDuration="0.75"
+              ariaLabel="rotating-lines-loading"
+            />
+          ))}
 
         {searchTokenDetails.length ? (
           <Card>
@@ -169,47 +156,25 @@ export default function TokenPage() {
                     <TableHead>Type</TableHead>
                   </TableRow>
                 </TableHeader>
-                {isLoading ? (
-                  <div className="flex h-[50vh] w-full items-center justify-center">
-                    <RotatingLines
-                      visible={true}
-                      width="40"
-                      strokeColor="#2c68e7"
-                      strokeWidth="5"
-                      animationDuration="0.75"
-                      ariaLabel="rotating-lines-loading"
-                    />
-                  </div>
-                ) : (
-                  <TableBody className="h-[50vh]">
-                    {!searchTokenDetails.length && <div>No Data available</div>}
-                    {searchTokenDetails.map((coin: any, index) => (
-                      <TableRow key={index}>
-                        <TableCell>{coin.name}</TableCell>
-                        <TableCell>{coin.symbol}</TableCell>
-                        <TableCell>{coin.decimals}</TableCell>
-                        <TableCell>{coin.coin_type.slice(0, 90)}</TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                )}
+                <TableBody className="h-[50vh]">
+                  {!searchTokenDetails.length && <div>No Data available</div>}
+                  {searchTokenDetails.map((coin: any, index) => (
+                    <TableRow key={index}>
+                      <TableCell
+                        className="cursor-pointer text-blue-500 hover:underline"
+                        onClick={() => {
+                          router.push(`${APP_PATHS.TOKENS}/${coin.coin_type}`)
+                        }}
+                      >
+                        {coin.name}
+                      </TableCell>
+                      <TableCell>{coin.symbol}</TableCell>
+                      <TableCell>{coin.decimals}</TableCell>
+                      <TableCell>{coin.coin_type.slice(0, 90)}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
               </Table>
-              <div className="mt-4 flex items-center justify-between">
-                <Button onClick={handlePrevPage} disabled={currentPage === 1}>
-                  <ChevronLeft className="mr-2 h-4 w-4" />
-                  Previous
-                </Button>
-                <span>
-                  Page {currentPage} of {totalPages}
-                </span>
-                <Button
-                  onClick={handleNextPage}
-                  disabled={currentPage === totalPages}
-                >
-                  Next
-                  <ChevronRight className="ml-2 h-4 w-4" />
-                </Button>
-              </div>
             </CardContent>
           </Card>
         ) : (
@@ -229,38 +194,32 @@ export default function TokenPage() {
                     <TableHead>Transfers</TableHead>
                   </TableRow>
                 </TableHeader>
-                {isLoading ? (
-                  <div className="flex h-[50vh] w-full items-center justify-center">
-                    <RotatingLines
-                      visible={true}
-                      width="40"
-                      strokeColor="#2c68e7"
-                      strokeWidth="5"
-                      animationDuration="0.75"
-                      ariaLabel="rotating-lines-loading"
-                    />
-                  </div>
-                ) : (
-                  <TableBody className="h-[50vh]">
-                    {!coins.length && <div>No Data available</div>}
-                    {coins.map((coin: any, index) => (
-                      <TableRow key={index}>
-                        <TableCell>{coin.rank}</TableCell>
-                        <TableCell>{coin.name}</TableCell>
-                        <TableCell>{coin.price ?? "-"}</TableCell>
-                        <TableCell>{coin.symbol}</TableCell>
-                        <TableCell>
-                          {coin.holder_count.toLocaleString()}
-                        </TableCell>
-                        <TableCell>
-                          {coin.transfer_count.toLocaleString()}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                )}
+                <TableBody className="h-[50vh]">
+                  {!coinLists.length && <div>No Data available</div>}
+                  {coinLists.map((coin: any, index: number) => (
+                    <TableRow key={index}>
+                      <TableCell>{coin.rank}</TableCell>
+                      <TableCell
+                        className="cursor-pointer text-blue-500 hover:underline"
+                        onClick={() => {
+                          router.push(`${APP_PATHS.TOKENS}/${coin.coin_type}`)
+                        }}
+                      >
+                        {coin.name}
+                      </TableCell>
+                      <TableCell>{coin.price ?? "-"}</TableCell>
+                      <TableCell>{coin.symbol}</TableCell>
+                      <TableCell>
+                        {coin.holder_count.toLocaleString()}
+                      </TableCell>
+                      <TableCell>
+                        {coin.transfer_count.toLocaleString()}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
               </Table>
-              {!!coins.length && (
+              {!!coinLists.length && (
                 <div className="mt-4 flex items-center justify-between">
                   <Button onClick={handlePrevPage} disabled={currentPage === 1}>
                     <ChevronLeft className="mr-2 h-4 w-4" />

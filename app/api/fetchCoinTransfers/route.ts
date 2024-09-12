@@ -1,14 +1,13 @@
 import { NextRequest, NextResponse } from "next/server"
-import { getNFTCollectionDataByCollectionNameQuery } from "@/queries/NFTCollections"
+import { getCoinTransferQuery } from "@/queries/CoinsQuery"
 
 import { BASE_MAINNET_URL } from "@/config/url.config"
 
 export async function POST(req: NextRequest) {
   try {
-    const { collectionName } = await req.json()
+    const { coinType, page, pageSize } = await req.json()
 
-    const operationsDoc =
-      getNFTCollectionDataByCollectionNameQuery(collectionName)
+    const operationsDoc = getCoinTransferQuery(coinType, page, pageSize)
 
     const response = await fetch(BASE_MAINNET_URL, {
       method: "POST",
