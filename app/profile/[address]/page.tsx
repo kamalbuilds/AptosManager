@@ -8,6 +8,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { Overview } from "@/components/overview"
 import { UserNFTComponent, UserTokenComponent } from "@/components/profile"
 import { TransferComponent } from "@/components/transfers"
+import { PortfolioAsset } from "@sonarwatch/portfolio-core";
+import DefiPage from "@/components/defi/DefiComponent"
 
 const ProfilePage = ({ params }: { params: any }) => {
   const { address } = params
@@ -62,7 +64,8 @@ const ProfilePage = ({ params }: { params: any }) => {
   const coinTypes = tokensData.filter((asset) => asset.amount > 0).length
   const nftsOwned = NFTsData.filter((asset) => asset.amount > 0).length
 
-  console.log("tokensData", NFTsData, tokensData)
+  console.log("tokensData", NFTsData, tokensData);
+
 
   return (
     <div className="flex flex-1 flex-col p-8">
@@ -105,6 +108,9 @@ const ProfilePage = ({ params }: { params: any }) => {
         </TabsContent>
         <TabsContent value="Transfers">
           <TransferComponent />
+        </TabsContent>
+        <TabsContent value="Defi">
+          <DefiPage address={address} />
         </TabsContent>
       </Tabs>
     </div>
