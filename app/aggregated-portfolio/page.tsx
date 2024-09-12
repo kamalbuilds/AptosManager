@@ -5,9 +5,11 @@ import { PlusIcon, TrashIcon } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card"
+import { useRouter } from 'next/navigation'
 
 export default function AggPortfolio() {
   const [addresses, setAddresses] = useState<string[]>([''])
+  const router = useRouter();
 
   const addAddress = () => {
     setAddresses([...addresses, ''])
@@ -27,7 +29,12 @@ export default function AggPortfolio() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     console.log('Submitted addresses:', addresses)
-    
+    const validAddresses = addresses.filter((address) => address.trim() !== '');
+
+    if (validAddresses.length > 0) {
+      // Pass the addresses as a query param to the next page
+      router.push(`/profile/aggregated?addresses=${validAddresses.join(',')}`)
+    }
   }
 
   return (

@@ -55,7 +55,9 @@ export default function TokenPage() {
 
       setIsLoading(true)
       const url = `${NODEREAL_URL}/api/coin?page=${currPage}&pageSize=10`
-      const res = await fetch(url)
+      const res = await fetch(url);
+
+      console.log(res,"res")
 
       const response = await res.json()
       console.log("Token Collection >>", response)
@@ -144,11 +146,11 @@ export default function TokenPage() {
               onChange={(e) => setSearchTerm(e.target.value)}
               className="w-full max-w-md"
             />
-            <Button onClick={handleClear}>Clear</Button>
             <Button onClick={handleSearch}>
               <Search className="mr-2 h-4 w-4" />
               Search
             </Button>
+            <Button onClick={handleClear}>Clear</Button>
           </div>
         </div>
 

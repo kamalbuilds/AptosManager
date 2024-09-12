@@ -1,8 +1,6 @@
 "use client"
 
 import React, { useContext, useEffect } from "react"
-import { NFTData } from "@/constants/NFTDataByAccount"
-import { TokenData } from "@/constants/TokenDataByAccount"
 import { GlobalContext } from "@/context/GlobalContext"
 
 import { fetchAccountData } from "@/config/fetchAccountData"
@@ -91,6 +89,9 @@ const ProfilePage = ({ params }: { params: any }) => {
           </TabsTrigger>
           <TabsTrigger value="Transfers" className="w-[100px]">
             Transfers
+          </TabsTrigger>
+          <TabsTrigger value="Defi" className="w-[100px]">
+            Defi
           </TabsTrigger>
         </TabsList>
         <TabsContent value="overview">

@@ -6,6 +6,13 @@ Lets users see their LP deposits across multiple Dexes , their NFTs , Tokens and
 
 Dev docs - https://developer.nodit.io/reference/getdailytransactionsstats
 
+## Defi Protocol Supported 
+
+1. Aries Markets
+2. Amnis Finance
+3. Thala
+4. TruStake
+5. Ecleron Market
 
 todo
 
