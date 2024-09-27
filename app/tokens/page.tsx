@@ -36,19 +36,20 @@ export default function TokenPage() {
 
   const totalPages = 10
   const handlePrevPage = () => {
-    const page = Math.max(currentPage - 1, 1)
     setCurrentPage((prev) => Math.max(prev - 1, 1))
   }
 
   const handleNextPage = () => {
-    const page = Math.min(currentPage + 1, totalPages)
     setCurrentPage((prev) => Math.min(prev + 1, totalPages))
   }
 
-  const { isLoading, data: coinLists } = useGetCoinLists({
+  const { data: coinLists, isFetching } = useGetCoinLists({
     page: currentPage - 1,
     pageSize: 10,
   })
+
+  console.log("isFetching", isFetching);
+
 
   const { mutate: fetchCoinDetailsByName, isPending: searching } =
     useGetCoinDetailsByName()
@@ -87,8 +88,6 @@ export default function TokenPage() {
     setSearchTerm("")
     setSearchTokenDetails([])
   }
-
-  console.log("isLoading", isLoading)
 
   return (
     <div className="container mx-auto p-4">
@@ -129,7 +128,7 @@ export default function TokenPage() {
         </div>
 
         {searching ||
-          isLoading ||
+          isFetching ||
           (searchingCoinDetails && (
             <RotatingLines
               visible={true}
@@ -140,6 +139,8 @@ export default function TokenPage() {
               ariaLabel="rotating-lines-loading"
             />
           ))}
+
+
 
         {searchTokenDetails.length ? (
           <Card>
@@ -182,43 +183,63 @@ export default function TokenPage() {
             <CardHeader>
               <CardTitle>Coins</CardTitle>
             </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Rank</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Price</TableHead>
-                    <TableHead>Symbol</TableHead>
-                    <TableHead>Holders</TableHead>
-                    <TableHead>Transfers</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody className="h-[50vh]">
-                  {!coinLists.length && <div>No Data available</div>}
-                  {coinLists.map((coin: any, index: number) => (
-                    <TableRow key={index}>
-                      <TableCell>{coin.rank}</TableCell>
-                      <TableCell
-                        className="cursor-pointer text-blue-500 hover:underline"
-                        onClick={() => {
-                          router.push(`${APP_PATHS.TOKENS}/${coin.coin_type}`)
-                        }}
-                      >
-                        {coin.name}
-                      </TableCell>
-                      <TableCell>{coin.price ?? "-"}</TableCell>
-                      <TableCell>{coin.symbol}</TableCell>
-                      <TableCell>
-                        {coin.holder_count.toLocaleString()}
-                      </TableCell>
-                      <TableCell>
-                        {coin.transfer_count.toLocaleString()}
-                      </TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              </Table>
+            <CardContent className="flex flex-col justify-between">
+
+              <div className="flex h-[70vh] flex-col items-center justify-center ">
+                {isFetching ? (
+                  <div className="">
+                    <RotatingLines
+                      visible={true}
+                      width="40"
+                      strokeColor="#2c68e7"
+                      strokeWidth="5"
+                      animationDuration="0.75"
+                      ariaLabel="rotating-lines-loading"
+                    />
+                  </div>
+                ) : (
+                  <>
+                    <Table>
+                      <TableHeader>
+                        <TableRow>
+                          <TableHead>Rank</TableHead>
+                          <TableHead>Name</TableHead>
+                          <TableHead>Price</TableHead>
+                          <TableHead>Symbol</TableHead>
+                          <TableHead>Holders</TableHead>
+                          <TableHead>Transfers</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody className="h-[50vh]">
+                        {!coinLists.length && <div>No Data available</div>}
+                        {!!coinLists.length && coinLists.map((coin: any, index: number) => (
+                          <TableRow key={index}>
+                            <TableCell>{coin.rank}</TableCell>
+                            <TableCell
+                              className="cursor-pointer text-blue-500 hover:underline"
+                              onClick={() => {
+                                router.push(`${APP_PATHS.TOKENS}/${coin.coin_type}`)
+                              }}
+                            >
+                              {coin.name}
+                            </TableCell>
+                            <TableCell>{coin.price ?? "-"}</TableCell>
+                            <TableCell>{coin.symbol}</TableCell>
+                            <TableCell>
+                              {coin.holder_count.toLocaleString()}
+                            </TableCell>
+                            <TableCell>
+                              {coin.transfer_count.toLocaleString()}
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </>
+                )}
+              </div>
+
+
               {!!coinLists.length && (
                 <div className="mt-4 flex items-center justify-between">
                   <Button onClick={handlePrevPage} disabled={currentPage === 1}>
@@ -237,6 +258,12 @@ export default function TokenPage() {
                   </Button>
                 </div>
               )}
+
+
+
+
+
+
             </CardContent>
           </Card>
         )}

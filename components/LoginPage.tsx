@@ -1,6 +1,6 @@
 "use client"
 
-import { useContext, useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { GlobalContext } from "@/context/GlobalContext"
 
@@ -21,8 +21,10 @@ import SocialIcons from "./SocialIcons"
 import { WalletSelector } from "./WalletSelector"
 import { Separator } from "./ui/separator"
 import { Aptos, AptosConfig, Network } from "@aptos-labs/ts-sdk"
+import { useWallet } from "@aptos-labs/wallet-adapter-react"
+import { toast } from "@/hooks/use-toast"
 
-export  function LoginPage() {
+export function LoginPage() {
   const {
     address,
     setAddress,
@@ -32,8 +34,11 @@ export  function LoginPage() {
     setNFTsTransferData,
   } = useContext(GlobalContext)
 
+  const { account, connected } = useWallet();
+
   const [userInput, setUserInput] = useState("");
   const [searchType, setSearchType] = useState("address");
+  const [loading, setLoading] = useState(false);
   const router = useRouter();
 
   const config = new AptosConfig({ network: Network.TESTNET });
@@ -42,10 +47,10 @@ export  function LoginPage() {
   const handleConnect = async () => {
     if (!userInput) return
     let resolvedAddress = userInput
-
+    setLoading(true);
     if (searchType === "name") {
 
-      const owner = await aptos.getOwnerAddress({name: userInput});
+      const owner = await aptos.getOwnerAddress({ name: userInput });
       if (!owner) {
         console.log("User not found")
         return
@@ -73,12 +78,25 @@ export  function LoginPage() {
         if (userTokenTransferDetails) setTokenTransferData(userTokenTransferDetails)
         if (userNFTTransferDetails) setNFTsTransferData(userNFTTransferDetails)
 
+        setLoading(false)
         router.push(`${APP_PATHS.PROFILE}/${resolvedAddress}`)
       }
-    } catch (error) {
+    } catch (error: any) {
+      setLoading(false)
+      toast({
+        variant: 'destructive',
+        title: 'Error in fetching data',
+        description: error.message
+      })
       console.log("Error", error)
     }
   }
+
+  useEffect(() => {
+    if (account?.address && connected) {
+      setUserInput(account?.address)
+    }
+  }, [account?.address])
 
   return (
     <div className="flex h-[80vh] w-full items-center justify-center px-4">
@@ -114,7 +132,7 @@ export  function LoginPage() {
                 />
               </TabsContent>
             </Tabs>
-            <Button onClick={handleConnect}>Explore</Button>
+            <Button onClick={handleConnect}>{loading ? 'Fetching Data...' : 'Explore'}</Button>
             <div className="mt-4 text-center text-sm">
               Reach out to us for any query.
               <SocialIcons />

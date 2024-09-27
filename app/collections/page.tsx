@@ -34,7 +34,7 @@ const CollectionPage = () => {
 
   const router = useRouter()
 
-  const { isLoading, data: collectionLists } = useGetCollectionLists({
+  const { isFetching, data: collectionLists } = useGetCollectionLists({
     page: currentPage - 1,
     pageSize: 10,
   })
@@ -100,8 +100,8 @@ const CollectionPage = () => {
           </Button>
         </div>
 
-        {searching ||
-          (isLoading && (
+        {searching &&
+          (
             <RotatingLines
               visible={true}
               width="40"
@@ -110,7 +110,7 @@ const CollectionPage = () => {
               animationDuration="0.75"
               ariaLabel="rotating-lines-loading"
             />
-          ))}
+          )}
 
         {searchCollectionDetails.length ? (
           <Card>
@@ -182,58 +182,75 @@ const CollectionPage = () => {
             <CardHeader>
               <CardTitle>NFT Collections</CardTitle>
             </CardHeader>
-            <CardContent>
-              <Table>
-                <TableHeader>
-                  <TableRow>
-                    <TableHead>Index</TableHead>
-                    <TableHead>Name</TableHead>
-                    <TableHead>Creator</TableHead>
-                    <TableHead>Supply</TableHead>
-                    <TableHead>Transfers</TableHead>
-                  </TableRow>
-                </TableHeader>
-                <TableBody className="h-[50vh]">
-                  {!collectionLists.length && <div>No Data available</div>}
-                  {collectionLists.map((collection: any, index: number) => {
-                    const hexCollectionId = `0x${collection.collection_data_id_hash}`
-                    return (
-                      <TableRow
-                        key={index}
-                        className=" h-[50px] cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800"
-                      >
-                        <TableCell>{collection.rank}</TableCell>
-                        <TableCell
-                          className="cursor-pointer text-blue-500 hover:underline"
-                          onClick={() =>
-                            router.push(`${APP_PATHS.NFTS}/${hexCollectionId}`)
-                          }
-                        >
-                          {collection.collection_name}
-                        </TableCell>
-                        <TableCell
-                          className="cursor-pointer text-blue-500 hover:underline"
-                          onClick={() => {
-                            if (collection?.creator_address)
-                              router.push(
-                                `${APP_PATHS.PROFILE}/${collection?.creator_address}`
-                              )
-                          }}
-                        >
-                          {shortenAddress(collection?.creator_address, 10)}
-                        </TableCell>
-                        <TableCell>
-                          {collection.supply?.toLocaleString()}
-                        </TableCell>
-                        <TableCell>
-                          {collection.transfer_count?.toLocaleString()}
-                        </TableCell>
+            <CardContent className="flex flex-col justify-between">
+
+              <div className="flex h-[70vh] flex-col items-center justify-center ">
+                {isFetching ? (
+                  <div>
+                    <RotatingLines
+                      visible={true}
+                      width="40"
+                      strokeColor="#2c68e7"
+                      strokeWidth="5"
+                      animationDuration="0.75"
+                      ariaLabel="rotating-lines-loading"
+                    />
+                  </div>
+                ) : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Index</TableHead>
+                        <TableHead>Name</TableHead>
+                        <TableHead>Creator</TableHead>
+                        <TableHead>Supply</TableHead>
+                        <TableHead>Transfers</TableHead>
                       </TableRow>
-                    )
-                  })}
-                </TableBody>
-              </Table>
-              <div className="mt-4 flex items-center justify-between">
+                    </TableHeader>
+                    <TableBody className="h-[50vh]">
+                      {!collectionLists.length && <div>No Data available</div>}
+                      {!!collectionLists.length && collectionLists.map((collection: any, index: number) => {
+                        const hexCollectionId = `0x${collection.collection_data_id_hash}`
+                        return (
+                          <TableRow
+                            key={index}
+                            className=" h-[50px] cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-800"
+                          >
+                            <TableCell>{collection.rank}</TableCell>
+                            <TableCell
+                              className="cursor-pointer text-blue-500 hover:underline"
+                              onClick={() =>
+                                router.push(`${APP_PATHS.NFTS}/${hexCollectionId}`)
+                              }
+                            >
+                              {collection.collection_name}
+                            </TableCell>
+                            <TableCell
+                              className="cursor-pointer text-blue-500 hover:underline"
+                              onClick={() => {
+                                if (collection?.creator_address)
+                                  router.push(
+                                    `${APP_PATHS.PROFILE}/${collection?.creator_address}`
+                                  )
+                              }}
+                            >
+                              {shortenAddress(collection?.creator_address, 10)}
+                            </TableCell>
+                            <TableCell>
+                              {collection.supply?.toLocaleString()}
+                            </TableCell>
+                            <TableCell>
+                              {collection.transfer_count?.toLocaleString()}
+                            </TableCell>
+                          </TableRow>
+                        )
+                      })}
+                    </TableBody>
+                  </Table>
+                )}
+              </div>
+
+              {!!collectionLists.length && <div className="mt-4 flex items-center justify-between">
                 <Button onClick={handlePrevPage} disabled={currentPage === 1}>
                   <ChevronLeft className="mr-2 size-4" />
                   Previous
@@ -248,7 +265,7 @@ const CollectionPage = () => {
                   Next
                   <ChevronRight className="ml-2 size-4" />
                 </Button>
-              </div>
+              </div>}
             </CardContent>
           </Card>
         )}
